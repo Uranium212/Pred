@@ -1,0 +1,182 @@
+-- Definimos las probabilidades para cada color
+local probabilidades = {
+    {color = "Red", probabilidad = 46.45},
+    {color = "Blue", probabilidad = 46.45},
+    {color = "Purple", probabilidad = 7.1}
+}
+
+local TweenService = game:GetService("TweenService")
+local player = game.Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Función para seleccionar un color basado en las probabilidades
+local function predecirColor()
+    local randomValue = math.random() * 100
+    local acumulador = 0
+
+    for _, data in ipairs(probabilidades) do
+        acumulador = acumulador + data.probabilidad
+        if randomValue <= acumulador then
+            return data.color
+        end
+    end
+end
+
+-- Crear la GUI
+local screenGui = Instance.new("ScreenGui")
+screenGui.ResetOnSpawn = false
+screenGui.DisplayOrder = 999  -- Asegurarse que esté sobre otras GUIs
+
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0.3, 0, 0.5, 0)
+mainFrame.Position = UDim2.new(0.35, 0, 0.25, 0)
+mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+mainFrame.BorderSizePixel = 0
+mainFrame.Active = true
+mainFrame.Draggable = true  -- Permite mover la GUI
+mainFrame.Visible = false
+mainFrame.Parent = screenGui
+
+local uiCorner = Instance.new("UICorner")
+uiCorner.CornerRadius = UDim.new(0.05, 0)
+uiCorner.Parent = mainFrame
+
+local uiStroke = Instance.new("UIStroke")
+uiStroke.Thickness = 2
+uiStroke.Color = Color3.fromRGB(255, 255, 255)
+uiStroke.Parent = mainFrame
+
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Size = UDim2.new(0.8, 0, 0.2, 0)
+titleLabel.Position = UDim2.new(0.1, 0, 0, 0)
+titleLabel.BackgroundTransparency = 1
+titleLabel.Text = "Uraniums Predictor V1"
+titleLabel.Font = Enum.Font.GothamBold
+titleLabel.TextSize = 24
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleLabel.Parent = mainFrame
+
+local closeButton = Instance.new("TextButton")
+closeButton.Size = UDim2.new(0.1, 0, 0.1, 0)
+closeButton.Position = UDim2.new(0.9, -20, 0, 10)
+closeButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+closeButton.Text = "X"
+closeButton.Font = Enum.Font.GothamBold
+closeButton.TextSize = 18
+closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeButton.Parent = mainFrame
+
+local button = Instance.new("TextButton")
+button.Size = UDim2.new(0.8, 0, 0.2, 0)
+button.Position = UDim2.new(0.1, 0, 0.3, 0)
+button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+button.Text = "Predict"
+button.Font = Enum.Font.GothamBold
+button.TextSize = 18
+button.TextColor3 = Color3.fromRGB(255, 255, 255)
+button.Parent = mainFrame
+
+local buttonCorner = Instance.new("UICorner")
+buttonCorner.CornerRadius = UDim.new(0.1, 0)
+buttonCorner.Parent = button
+
+local label = Instance.new("TextLabel")
+label.Size = UDim2.new(0.8, 0, 0.2, 0)
+label.Position = UDim2.new(0.1, 0, 0.6, 0)
+label.BackgroundTransparency = 1
+label.Text = "Predicted Color: "
+label.Font = Enum.Font.Gotham
+label.TextSize = 18
+label.TextColor3 = Color3.fromRGB(255, 255, 255)
+label.Parent = mainFrame
+
+local markButton = Instance.new("TextButton")
+markButton.Size = UDim2.new(0.8, 0, 0.2, 0)
+markButton.Position = UDim2.new(0.1, 0, 0.8, 0)
+markButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+markButton.Text = "ESP Supply Drop"
+markButton.Font = Enum.Font.GothamBold
+markButton.TextSize = 18
+markButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+markButton.Parent = mainFrame
+
+local markButtonCorner = Instance.new("UICorner")
+markButtonCorner.CornerRadius = UDim.new(0.1, 0)
+markButtonCorner.Parent = markButton
+
+local openButton = Instance.new("TextButton")
+openButton.Size = UDim2.new(0.1, 0, 0.1, 0)
+openButton.Position = UDim2.new(0.9, -20, 0, 10)
+openButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+openButton.Text = "O"
+openButton.Font = Enum.Font.GothamBold
+openButton.TextSize = 18
+openButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+openButton.Parent = screenGui
+
+screenGui.Parent = playerGui
+
+-- Función para cambiar el color de fondo y el texto de la etiqueta
+local function actualizarGUI(color)
+    label.Text = "Predicted Color: " .. color
+    local colorMap = {
+        Rojo = Color3.fromRGB(255, 0, 0),
+        Azul = Color3.fromRGB(0, 0, 255),
+        Morado = Color3.fromRGB(128, 0, 128)
+    }
+    local newColor = colorMap[color]
+    local tween = TweenService:Create(mainFrame, TweenInfo.new(0.5), {BackgroundColor3 = newColor})
+    tween:Play()
+end
+
+-- Función para marcar el "Supply Drop"
+local function ESPSupplyDrop()
+    local supplyDrop = workspace:FindFirstChild("Supply Drop")
+    if supplyDrop then
+        local highlight = supplyDrop:FindFirstChildOfClass("Highlight") or Instance.new("Highlight")
+        highlight.FillColor = Color3.fromRGB(255, 255, 0)
+        highlight.OutlineColor = Color3.fromRGB(0, 0, 0)
+        highlight.Parent = supplyDrop
+    else
+        warn("No ses encontró 'Supply Drop' en el Workspace.")
+    end
+end
+
+-- Conectar las funciones de los botones
+button.MouseButton1Click:Connect(function()
+    local color = predecirColor()
+    actualizarGUI(color)
+end)
+
+markButton.MouseButton1Click:Connect(function()
+    marcarSupplyDrop()
+end)
+
+closeButton.MouseButton1Click:Connect(function()
+    mainFrame.Visible = false
+    openButton.Visible = true
+end)
+
+openButton.MouseButton1Click:Connect(function()
+    mainFrame.Visible = true
+    openButton.Visible = false
+end)
+
+-- Función para generar el "Supply Drop" cada 5 minutos
+local function spawnearSupplyDrop()
+    while true do
+        local supplyDrop = workspace:FindFirstChild("Supply Drop")
+        if not supplyDrop then
+            supplyDrop = Instance.new("Part")
+            supplyDrop.Name = "Supply Drop"
+            supplyDrop.Size = Vector3.new(4, 4, 4)
+            supplyDrop.Position = Vector3.new(math.random(-50, 50), 50, math.random(-50, 50))
+            supplyDrop.Anchored = true
+            supplyDrop.Parent = workspace
+        end
+        wait(300)  -- Esperar 5 minutos
+    end
+end
+
+-- Iniciar el proceso de spawneo
+spawn(spawnearSupplyDrop)
